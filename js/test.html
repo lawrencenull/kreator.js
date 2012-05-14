@@ -1,0 +1,19 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<a href="#" class="add-slide">+</a>
+	<section>1</section>
+	<section>2</section>
+
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+	var slideId = 0;
+	var $newSlide = $('<section>Add content here</section>')
+	$('.add-slide').on('click', function(){
+		$('<section>Add content here</section>').insertAfter($('section').eq(slideId));
+	})
+</script>
+</body>
+</html>

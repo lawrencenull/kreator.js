@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>kreator</title>
+	<!-- <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/zenburn.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+<div class="add-slide add-left" data-direction="left">+</div>
+<div class="add-slide add-down" data-direction="bottom">+</div>
+<div id="reveal">
+	<div class="slides"> 
+		<section>
+			<h4>kreator - reveal.js slide creator</h4>
+			<p>use the + buttons to add slides in any direction you like :)</p>
+			<!-- <img src="ps.png"> -->
+		</section>
+		<section>
+			<section>
+				<h4>kreator - reveal.js slide creator</h4>
+				<p>use the + buttons to add slides in any direction you like :)</p>
+			</section>
+			<section>
+				<h4>kreator - reveal.js slide creator</h4>
+				<p>use the + buttons to add slides in any direction you like :)</p>
+			</section>
+		</section>
+	</div>
+
+<aside class="controls">
+	<a class="left" href="#">&#x25C4;</a>
+	<a class="right" href="#">&#x25BA;</a>
+	<a class="up" href="#">&#x25B2;</a>
+	<a class="down" href="#">&#x25BC;</a>
+</aside>
+<div id="footer">
+	<div class="resize">| | |</div>
+	<div class="content" contentEditable>
+		hello
+	</div>
+	<div class='font-options'>
+		<p>
+			<label for=font-size>Font size</label>
+			<input type=range id=font-size>
+		</p>
+		<p>
+			<label for=font-color>Font color</label>
+			<input type=color id=font-color>
+		</p>
+		<p>
+			<label for=font-color>Font color</label>
+			<input list=font-family>
+				<datalist id=font-family>
+					<option value="Serif">
+					<option value="Sans-Serif">
+					<option value="Helvetica">
+				</datalist>
+		</p>
+	</div>
+	<div class="bottom-bar">
+		<p>83 words | 503 characters | 00:00:20 reading time</p>
+	</div>
+</div>
+<div class="progress"><span></span></div>
+</div>
+</body>
+<script src="js/reveal.min.js"></script>
+
+<!-- Optional libraries for code syntax highlighting and classList support in IE9 -->
+<script src="js/highlight.js"></script>
+
+<script>
+	// Parse the query string into a key/value object
+	var query = {};
+	location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+		query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+	} );
+
+	Reveal.initialize({
+		// Display controls in the bottom right corner
+		controls: true,
+
+		// Display a presentation progress bar
+		progress: true,
+
+		// If true; each slide will be pushed to the browser history
+		//history: true,
+
+		// Loops the presentation, defaults to false
+		loop: false,
+
+		// Flags if mouse wheel navigation should be enabled
+		mouseWheel: true,
+
+		// Apply a 3D roll to links on hover
+		rollingLinks: true,
+
+		// UI style
+		theme: query.theme || 'default', // default/neon
+
+		// Transition style
+		transition: query.transition || 'default' // default/cube/page/concave/linear(2d)
+	});
+
+</script>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/script.js"></script>
+</html>
