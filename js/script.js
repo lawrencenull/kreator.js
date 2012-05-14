@@ -11,7 +11,6 @@ Reveal.addEventListener( 'slidechanged', function( event ) {
 	hideFooter();
 	_currentSlide.y = event.indexh
 	_currentSlide.x = event.indexv
-
 } )
 
 $('.add-down').on('click', function(){
@@ -28,7 +27,6 @@ $('.add-down').on('click', function(){
 	}
 	
 	Reveal.navigateDown()
-
 })
 
 $('.add-left').on('click', function(){
@@ -43,25 +41,25 @@ $('.add-left').on('click', function(){
 
 var hideFooter = function(e){
 	$('#footer').css({
-		'height' : 180,
-		'bottom' : -180
-	}).removeClass();
+		'height' : 210,
+		'bottom' : -220
+	}).removeClass()
 	if($editable && $editable.children()[0]) {
-		$editable.replaceWith($editable.children()[0]);
+		$editable.replaceWith($editable.children()[0])
 	}
 }
 
 var editSection = function(e){
 	
 	e.stopPropagation();
-	var tagName = this.nodeName.toLowerCase();
-		if(tagName === 'section' || tagName === 'div') return;
+	var tagN = this.nodeName.toLowerCase();
+		if(tagN === 'section' || tagN === 'div' || tagN === 'img') return;
 	$editable = $(this);
-	var content = $(this).html();
+	var content = $editable.html();
 	
 	$('#footer').css({
 		'bottom' : 0
-	}).children('.content').text('<' + tagName + '>' + content + '</' + tagName + '>');
+	}).children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
 
 	$('#footer .content').on('keyup', function(){
 		$editable.html($(this).text());
@@ -102,12 +100,9 @@ var moveImgs = function(e){
 				y : e.clientY
 			}
 			var d = parseInt(Math.sqrt( (o.x - n.x)*(o.x - n.x) + (o.y - n.y)*(o.y - n.y) ));
-			
-			var diag = Math.sqrt(w*w + h*h);
-			var p = d*100/diag;
+			if(n.x > o.x || n.y > o.y) d = -d;
 			$that.css({
-				'width' : w/p,
-				'height' : h/p
+				'width' : w-d
 			})
 		})
 	}
@@ -164,20 +159,12 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 	, reader = new FileReader()
 	;
 	
-	reader.onload = function (event) {
+	reader.onload = function (e) {
 		var img = $('<img></img>').on('mousedown', moveImgs)
 			.attr('dragable', true)
-			.attr('src', event.target.result)
+			.attr('src', e.target.result)
 			.appendTo($this)
-			.bind('dragstart', function(event) { event.preventDefault(); });
-
-		// var div = $('<div class="img"></div>').css({
-		// 			width: parseInt(img.css('width')),
-		// 			height: parseInt(img.css('height'))
-		// 		})
-		// 	.appendTo($this);
-		// img.detach().appendTo(div).show()
-		// 	
+			.bind('dragstart', function(e) { e.preventDefault(); });	
 	};
 
 	reader.readAsDataURL(file);

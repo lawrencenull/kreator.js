@@ -1,14 +1,7 @@
 * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
 
-/*::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
-::selection { background: #fe57a1; color: #fff; text-shadow: none; }*/
-
-::::-moz-selection,
-::selection {
-	color: none;
-	background: none;
-	display:none;
-}
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
 
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -63,45 +56,45 @@ div[data-direction=bottom] {
 	position:fixed;
 	left:0;
 	width:100%;
-	height:180px;
+	height:210px;
 	background:#fff;
-	padding:25px;
 	color:#333;
 	font-size:18px;
-	bottom:-180px;
+	bottom:-220px;
 	-webkit-transition-duration:.2s;
 	-moz-transition-duration:.2s;
 	transition-duration:.2s;
 	box-shadow:
 		0 -5px 10px #222;
-	-webkit-transition-duration:.3s;
 }
-	#footer.large {
-		font-size:22px;
+		#footer.large {
+			font-size:22px;
 
-	}
+		}
 
-	#footer.larger {
-		font-size:28px;
-	}
+		#footer.larger {
+			font-size:28px;
+		}
 
 	.resize {
 		width:100%;
-		height:20px;
+		height:10px;
 		background:-webkit-linear-gradient(#eee,#ccc);
 		border-top:1px solid #fff;
 		border-bottom:1px solid #bbb;
 		position:absolute;
-		top:0;
+		top:-10px;
 		left:0;
 		z-index:10;
-		-webkit-transition-duration:.2s;
-		-moz-transition-duration:.2s;
-		transition-duration:.2s;
 		font-size:9px;
+		line-height:5px;
 		text-align:center;
-		color:#777;
 		text-shadow:0px 1px 0 #eee;
+		-webkit-transition-duration:.3s;
+		-moz-user-select:none;
+		-webkit-user-select:none;
+		user-select:none;
+		-ms-user-select:none;
 	}
 
 		.resize:hover { 
@@ -110,8 +103,7 @@ div[data-direction=bottom] {
 
 	.bottom-bar {
 		position:absolute;
-		bottom:0;
-		left:0;
+		bottom:0;left:0;
 		width:100%;
 		height:25px;
 		font-size:14px;
@@ -125,34 +117,32 @@ div[data-direction=bottom] {
 
 	.content {
 		width:70%;
+		margin-top:.2em;
 	}
 
-.font-options {
-	margin-top:-20px;
-	float:right;
-}
+		.font-options {
+			margin-top:-20px;
+			float:right;
+		}
 
-label {
-	font-size: 13px;
-	font-weight: normal;
-	color: #333333;
-}
-
-input {
-	height:25px;
-	padding:0 5px;
-	font-size:13px;
-	color:#555;
-	border-radius:3px;
-	border:1px solid #ccc;
-}
-
-	input:focus {
-		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+	.text-controls {
+		width:100%;
+		padding:.2em;
+		background:#eee;
+		font-size:12px;
+		-webkit-transition-duration:.3s;
+		-moz-user-select:none;
+		-webkit-user-select:none;
+		user-select:none;
+		-ms-user-select:none;
 	}
 
 img {
 	cursor:move;
 	position:absolute;
 	z-index:-1;
+}
+
+.progress {
+	margin-bottom:0;
 }
