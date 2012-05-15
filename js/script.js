@@ -1,11 +1,7 @@
 "use strict"
 
-var _currentSlide = {
-	x: 0,
-	y: 0
-	}
-	, $editable
-	;
+var _currentSlide = { x: 0, y: 0 }
+	, $editable;
 
 Reveal.addEventListener( 'slidechanged', function( event ) {
 	hideFooter();
@@ -44,6 +40,7 @@ var hideFooter = function(e){
 		'height' : 210,
 		'bottom' : -220
 	}).removeClass()
+
 	if($editable && $editable.children()[0]) {
 		$editable.replaceWith($editable.children()[0])
 	}
@@ -75,21 +72,18 @@ var moveImgs = function(e){
 		which : e.which
 	}
 	var $that = $(this);
-	console.log(e.which);
 	if(e.which == 1) {
 		var left = parseInt($that.css('left')) || 0;
 		var top = parseInt($that.css('top')) || 0;
 		$(window).on('mousemove', function(e){
-			var newpos = {
-				x : e.clientX,
-				y : e.clientY
-			}
-			var x = left + newpos.x - o.x
-			var y = top + newpos.y - o.y
+
+			var x = left + e.clientX - o.x
+			var y = top + e.clientY - o.y
 			$that.css({
 				'left' : x,
 				'top' : y
 			})
+
 		})
 	} else {
 		var w = parseInt($that.css('width'));
@@ -123,21 +117,15 @@ $('section').on('dblclick', function(){
 	$('.content').focus();
 })
 
+$('section>*').on('keydown', function(){
+	$('.content').text($(this).html());
+})
+
 $('.resize').on('mousedown', function(e){
 
 	var resizeFooter = function(e) {
 		var nh = $(document).height() - e.clientY;
-		if(nh>0) {
-			$('#footer').css({
-				'height' : nh
-			})
-				if(nh > 250) {
-					$('#footer').addClass('large');
-				}
-				if(nh > 350) {
-					$('#footer').removeClass('large').addClass('larger');
-				}
-		} 
+		$('#footer').css({ 'height' : nh })
 	}
 
 	$(window).on('mousemove', function(e){
@@ -156,17 +144,26 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 	
 	var $this = $(this)
 	, file = e.dataTransfer.files[0]
-	, reader = new FileReader()
-	;
+	, reader = new FileReader();
 	
 	reader.onload = function (e) {
-		var img = $('<img></img>').on('mousedown', moveImgs)
-			.attr('dragable', true)
-			.attr('src', e.target.result)
+		var img = $('<img src="'+e.target.result+'"></img>').on('mousedown', moveImgs)
 			.appendTo($this)
 			.bind('dragstart', function(e) { e.preventDefault(); });	
 	};
 
 	reader.readAsDataURL(file);
-
 }
+
+$('button.btn').on('click', function(){
+	var s = window.getSelection()
+	, string = $('.content').text()
+	, newstring = string.substring(0, s.baseOffset)
+	, tag = $(this).data('textstyle');
+	newstring += '<'+ tag +'>';
+	newstring += string.substring(s.baseOffset, s.extentOffset);
+	newstring += '</'+ tag +'>';
+	newstring += string.substring(s.extentOffset, string.length-1);
+	$('.content').text(newstring);
+	$editable.html(newstring);
+})

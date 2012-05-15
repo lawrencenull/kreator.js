@@ -28,7 +28,6 @@ section>section, .slides:first-child section:first-child {
 	background:#252525;
 	padding:14px 10px 16px;
 	text-shadow:0 1px 0 #111;
-	z-index:100;
 }
 
 	.add-slide:hover {
@@ -136,4 +135,8 @@ img {
 
 .progress {
 	margin-bottom:0;
+}
+
+input[type=range] {
+	width:120px;
 }
