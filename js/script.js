@@ -41,9 +41,8 @@ var hideFooter = function(e){
 		'bottom' : -220
 	}).removeClass()
 
-	if($editable && $editable.children()[0]) {
-		$editable.replaceWith($editable.children()[0])
-	}
+	var edit = document.getElementsByClassName('content')[0];
+	console.log(edit);
 }
 
 var editSection = function(e){
@@ -59,6 +58,9 @@ var editSection = function(e){
 	}).children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
 
 	$('#footer .content').on('keyup', function(){
+		var string = $('.present').text();
+		$('#word-count').text(string.split(' ').length);
+		$('#char-count').text(string.length);
 		$editable.html($(this).text());
 	})
 
@@ -111,10 +113,12 @@ $('section').on('click', hideFooter)
 $('section>*').live('click', editSection)
 
 $('section').on('dblclick', function(){
-	var $that = $('<p></p>');
-	$(this).append($that);
-	$that.trigger('click');
-	$('.content').focus();
+	if(!$('section', $(this)).length) { // if it's a section with no children
+		var $that = $('<p></p>');
+		$(this).append($that);
+		$that.trigger('click');
+		$('.content').focus();
+	}
 })
 
 $('section>*').on('keydown', function(){
@@ -155,7 +159,7 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 	reader.readAsDataURL(file);
 }
 
-$('button.btn').on('click', function(){
+$('button.btn').on('click', function(){ // makes words in bold/italic/underline
 	var s = window.getSelection()
 	, string = $('.content').text()
 	, newstring = string.substring(0, s.baseOffset)

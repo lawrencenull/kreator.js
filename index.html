@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
 	<title>kreator</title>
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'> -->
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
+
+<div class="nav">
+	<ul>
+		<li><a href="#">Settings</a></li>
+		<li><a href="#">Save</a></li>
+		<li><a href="#">Login</a></li>
+	</ul>
+</div>
 
 <div class="add-slide add-left" data-direction="left">+</div>
 <div class="add-slide add-down" data-direction="bottom">+</div>
@@ -54,7 +62,7 @@
 		hello
 	</div>
 	<div class="bottom-bar">
-		<p>83 words | 503 characters | 00:00:20 reading time</p>
+		<p><span id='word-count'>83</span> words | <span id='char-count'>503</span> characters | 00:00:20 reading time</p>
 	</div>
 </div>
 <div class="progress"><span></span></div>
