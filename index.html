@@ -9,13 +9,17 @@
 </head>
 <body>
 
-<div class="nav">
-	<ul>
-		<li><a href="#">Settings</a></li>
-		<li><a href="#">Save</a></li>
-		<li><a href="#">Login</a></li>
-	</ul>
-</div>
+<header class='navbar navbar-fixed-top'>
+		<div class="navbar-inner">
+			<div class="container">
+				<ul class='nav'>
+					<li><a href="#">Settings</a></li>
+					<li><a href="#">Save</a></li>
+					<li><a href="#" id="login">Login</a></li>
+				</ul>
+			</div>
+		</div>
+</header>
 
 <div class="add-slide add-left" data-direction="left">+</div>
 <div class="add-slide add-down" data-direction="bottom">+</div>
@@ -24,7 +28,6 @@
 		<section>
 			<h4 contentEditable>kreator - reveal.js slide creator</h4>
 			<p contentEditable>use the + buttons to add slides in any direction you like :)</p>
-			<!-- <img src="ps.png"> -->
 		</section>
 		<section>
 			<section>
@@ -48,13 +51,13 @@
 	<div class="resize"></div>
 	<div class="text-controls">
 		<div class="row">
-			<div class="span2">
-				<button class="btn" data-textstyle=b><b>B</b></button>
-				<button class="btn" data-textstyle=i><i>I</i></button>
-				<button class="btn" data-textstyle=u><u>U</u></button>
-			</div>
-			<div class="span4">
-				a <input type=range> A
+			<div class="span6">
+				<div class="btn-group">
+					<button class="btn" data-textstyle=b><b>B</b></button>
+					<button class="btn" data-textstyle=i><i>I</i></button>
+					<button class="btn" data-textstyle=u><u>U</u></button>
+				</div>
+				<button class='btn' data-textstyle=a>link</button>
 			</div>
 		</div>
 	</div>
@@ -70,9 +73,6 @@
 </body>
 <script src="js/reveal.min.js"></script>
 
-<!-- Optional libraries for code syntax highlighting and classList support in IE9 -->
-<script src="js/highlight.js"></script>
-
 <script>
 	// Parse the query string into a key/value object
 	var query = {};
@@ -81,32 +81,14 @@
 	} );
 
 	Reveal.initialize({
-		// Display controls in the bottom right corner
 		controls: true,
-
-		// Display a presentation progress bar
-		progress: true,
-
-		// If true; each slide will be pushed to the browser history
-		//history: true,
-
-		// Loops the presentation, defaults to false
-		loop: false,
-
-		// Flags if mouse wheel navigation should be enabled
-		mouseWheel: true,
-
-		// Apply a 3D roll to links on hover
-		rollingLinks: true,
-
-		// UI style
-		theme: query.theme || 'default', // default/neon
-
-		// Transition style
-		transition: query.transition || 'default' // default/cube/page/concave/linear(2d)
+		progress: true
 	});
 
 </script>
 <script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/prefixfree.min.js"></script>
 <script src="js/script.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/text.js"></script>
 </html>

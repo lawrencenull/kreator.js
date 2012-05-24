@@ -40,22 +40,23 @@ var hideFooter = function(e){
 		'height' : 210,
 		'bottom' : -220
 	}).removeClass()
-
-	var edit = document.getElementsByClassName('content')[0];
-	console.log(edit);
 }
 
 var editSection = function(e){
-	
 	e.stopPropagation();
-	var tagN = this.nodeName.toLowerCase();
-		if(tagN === 'section' || tagN === 'div' || tagN === 'img') return;
 	$editable = $(this);
-	var content = $editable.html();
+
+	var tagN = this.nodeName.toLowerCase()
+		, content = $editable.html();
+
+	if(tagN === 'section' || tagN === 'div' || tagN === 'img') return;
 	
-	$('#footer').css({
-		'bottom' : 0
-	}).children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
+	if(content[0] !== '<')
+		$('#footer').css({ 'bottom' : 0 })
+			.children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
+		else
+			$('#footer').css({ 'bottom' : 0 })
+				.children('.content').text(content);
 
 	$('#footer .content').on('keyup', function(){
 		var string = $('.present').text();
@@ -112,6 +113,11 @@ $('section>img').on('mousedown', moveImgs)
 $('section').on('click', hideFooter)
 $('section>*').live('click', editSection)
 
+$('section>*').on('keydown', function(){
+	var content = $(this).text();
+	$('.content').text(content);
+})
+
 $('section').on('dblclick', function(){
 	if(!$('section', $(this)).length) { // if it's a section with no children
 		var $that = $('<p></p>');
@@ -121,9 +127,6 @@ $('section').on('dblclick', function(){
 	}
 })
 
-$('section>*').on('keydown', function(){
-	$('.content').text($(this).html());
-})
 
 $('.resize').on('mousedown', function(e){
 
@@ -158,16 +161,3 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 
 	reader.readAsDataURL(file);
 }
-
-$('button.btn').on('click', function(){ // makes words in bold/italic/underline
-	var s = window.getSelection()
-	, string = $('.content').text()
-	, newstring = string.substring(0, s.baseOffset)
-	, tag = $(this).data('textstyle');
-	newstring += '<'+ tag +'>';
-	newstring += string.substring(s.baseOffset, s.extentOffset);
-	newstring += '</'+ tag +'>';
-	newstring += string.substring(s.extentOffset, string.length-1);
-	$('.content').text(newstring);
-	$editable.html(newstring);
-})
