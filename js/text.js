@@ -1,31 +1,47 @@
 $('button.btn').on('click', function(){ // makes words in bold/italic/underline
 	var s = window.getSelection()
 	, string = $('.content').text()
-	, newstring = string.substring(0, s.baseOffset)
-	, tag = $(this).data('textstyle');
+	, newstring = ''
+	, tag = $(this).data('textstyle')
+	, find = string.substring(s.baseOffset, s.extentOffset);
+
 	if(tag === 'a') {
 		insertHiperlink();
 		return;
 	}
+
 	newstring += '<'+ tag +'>';
 	newstring += string.substring(s.baseOffset, s.extentOffset);
 	newstring += '</'+ tag +'>';
-	newstring += string.substring(s.extentOffset, string.length-1);
-	$('.content').text(newstring);
-	$editable.html(newstring);
-})
+	
+	string = $('.content').html();
+	string = string.replace(find, newstring);
+
+	$('.content').html(string);
+	$editable.html(string);
+});
 
 var insertHiperlink = function() {
 		
 	var s = window.getSelection()
 		, string = $('.content').text()
-		, newstring = string.substring(0, s.baseOffset)
+		, newstring = ''
+		, find = string.substring(s.baseOffset, s.extentOffset);
+
+	console.log(string, ' looking for ', find)
+	console.log(s);
 
 	newstring += '<a href="#">';
-	newstring += string.substring(s.baseOffset, s.extentOffset);
+	newstring += find;
 	newstring += '</a>';
-	newstring += string.substring(s.extentOffset, string.length-1);
-	$('.content').text(newstring);
-	$editable.html(newstring);
+
+	string = $('.content').html();
+
+	console.log('replace ', find, ' with ', newstring)
+
+	string = string.replace(find, newstring);
+
+	$('.content').html(string);
+	$editable.html(string);
 
 }

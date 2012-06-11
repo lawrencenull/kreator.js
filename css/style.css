@@ -16,6 +16,21 @@ section>section, .slides:first-child section:first-child {
 	position:relative;
 }
 
+	section {
+		cursor:text;
+	}
+
+	section p {
+		width:100%;
+		height:20px;
+		background:rgba(148, 148, 148, .2);
+	}
+
+	section span {
+		display:block;
+		width:100%;
+	}
+
 .add-slide {
 	position:absolute;
 	border-radius:50%;
@@ -100,18 +115,23 @@ div[data-direction=bottom] {
 		width:100%;
 		height:25px;
 		font-size:14px;
-		text-align:right;
 		color:#777;
 		background:#eee;
 	}
 
 		.bottom-bar p {
+			display:inline-block;
 			margin:2px .5em;
 		}
 
+			.bottom-bar p:nth-child(2) {
+				float:right;
+			}
+
 	.content {
+		font-size:1em;
 		width:70%;
-		margin-top:.2em;
+		min-height:100px;
 	}
 
 		.font-options {
@@ -158,39 +178,34 @@ input[type=range] {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	background:#aaa;
 	background: rgba(0,0,0,.6);
+	z-index:50;
+}
+
+.dialog-login {
+	width:60%;
+	margin:-200px auto;
+	position:relative;
+	z-index:100;
+	animation:slide-down .5s;
+	animation-fill-mode:forwards;
+	background:#fff;
+	padding:25px 18px;
+	border-radius:3px;
+	color:#333;
 }
 	
-	.dialog-wrapper .row {
-		margin-top:8%;
+	.dialog-login form {
 	}
 
-		.dialog-wrapper .dialog-login {
-			width:50%;
-			margin:-500px auto;
-			background:#fff;
-			padding:.5em;
-			border-radius:4px;
-		}
-
-		.dialog-wrapper input[type=text], .dialog-wrapper input[type=password] {
+		.dialog-login form input[type=text], .dialog-login form input[type=password] {
 			height:28px;
 		}
 
-		.dialog-wrapper form {
-			width:80%;
-			margin:0 auto;
-		}
-
-.dialog-login.slide-down {
-	animation-name:slide-down;
-	animation-duration:.5s;
-	animation-fill-mode:forwards;
-}
-
 @keyframes slide-down {
 	to {
-		margin-top:0;
+		margin-top:0px;
 	}
 }
 

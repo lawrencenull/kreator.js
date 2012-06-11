@@ -1,71 +1,128 @@
-"use strict"
+//"use strict"
 
-var _currentSlide = { x: 0, y: 0 }
-	, $editable;
+var _currentSlide = { x: 0, y: 0 },
+	$editable,
+	Kreator = new Kreate();
 
 Reveal.addEventListener( 'slidechanged', function( event ) {
 	hideFooter();
-	_currentSlide.y = event.indexh
-	_currentSlide.x = event.indexv
-} )
+	Kreator.setSlideX(event.indexh);
+	Kreator.setSlideY(event.indexv);
+});
+
+function Kreate () {
+
+	var slideX = 0;
+	var slideY = 0;
+
+	var setSlideX = function(x) {
+		this.slideX = x;
+	};
+
+	var setSlideY = function(y) {
+		this.slideY = y;
+	};
+
+	var getCurrentSlide = function() {
+		var s = $('.slides>section').eq(slideX);
+		if(s.length > 1) {
+			return s[this.slideY];
+		} else {
+			return s;
+		}
+	};
+
+	var getDownSlide = function() {
+		var s = $('.slides>section').eq(slideX);
+		var c = $('section', s);
+		if(!c.length) return 0;
+		else {
+			return c[this.slideY+1];
+		}
+	};
+
+	var addSlideRight = function(content) {
+		var s = getCurrentSlide();
+		$('<section>' + content + '</section>').insertAfter(s);
+	};
+
+	var addSlideLeft = function(content) {
+		var s = getCurrentSlide();
+		$('<section>' + content + '</section>').insertBefore(s);
+	};
+
+	var addSlideDown = function(content) {
+		var s = getCurrentSlide();
+		var p = s.parent();
+		if(p.hasClass('slides')) {
+			var slides = $('<section></section>')
+						.append(s.clone())
+						.append('<section>'+content+'</section>');
+			s.replaceWith(slides);
+		} else {
+			alert('with children');
+		}
+	};
+
+	return {
+		setSlideY: setSlideY,
+		setSlideX: setSlideX,
+		addSlideRight: addSlideRight,
+		addSlideLeft: addSlideLeft,
+		addSlideDown: addSlideDown
+	};
+
+}
 
 $('.add-down').on('click', function(){
-	var $current = $('.slides>section').eq(_currentSlide.y)
-
-	if($('section', $current).length) {
-		$current = $('section', $current).eq(_currentSlide.x)
-		$('<section>new level</section>').insertAfter($current);
-	} else {
-		// section has no height
-		var $content = $('<h2>new slide</h2>').on('click', editSection);
-		var $newSlide = $('<section></section>').append($content);
-		$current.html('<section>' + $current.html() + '</section>').append($newSlide);
-	}
-	
-	Reveal.navigateDown()
-})
+	Kreator.addSlideDown('dummy');
+	Reveal.navigateDown();
+});
 
 $('.add-left').on('click', function(){
-	var $current = $('.slides>section').eq(_currentSlide.y)
-	var $content = $('<p>new slide</p>').on('click', editSection);
-	$('<section></section>')
-		.append($content)
-		.on('click', hideFooter)
-		.insertAfter($current);
+	Kreator.addSlideRight('dummy');
 	Reveal.navigateRight();
-})
+});
 
 var hideFooter = function(e){
 	$('#footer').css({
 		'height' : 210,
 		'bottom' : -220
-	}).removeClass()
-}
+	}).removeClass();
+};
 
 var editSection = function(e){
 	e.stopPropagation();
 	$editable = $(this);
 
-	var tagN = this.nodeName.toLowerCase()
-		, content = $editable.html();
+	var tagN = this.nodeName.toLowerCase(),
+		content = $editable.html();
 
 	if(tagN === 'section' || tagN === 'div' || tagN === 'img') return;
-	
-	if(content[0] !== '<')
+
+	if(content[0] !== '<' && tagN !== 'span')
 		$('#footer').css({ 'bottom' : 0 })
 			.children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
 		else
 			$('#footer').css({ 'bottom' : 0 })
 				.children('.content').text(content);
 
-	$('#footer .content').on('keyup', function(){
-		var string = $('.present').text();
-		$('#word-count').text(string.split(' ').length);
-		$('#char-count').text(string.length);
-		$editable.html($(this).text());
-	})
 
-}
+};
+
+$('#footer .content').on('keyup', function(e){
+	var string = $('.present').text();
+	
+	if(e.keyCode == 13) {
+		this.innerHTML = this.innerHTML.replace(/(<div>)?|(<div>)+/gi, '')
+						.replace(/<\/div>/gi, '')
+						.replace(/&nbsp;/gi, ' <br>');
+	}
+
+	$('#word-count').text(string.split(' ').length);
+	$('#char-count').text(string.length);
+	$editable.html(this.innerHTML);
+});
 
 var moveImgs = function(e){
 	if(e.which > 2) return;
@@ -73,77 +130,69 @@ var moveImgs = function(e){
 		x : e.clientX,
 		y : e.clientY,
 		which : e.which
-	}
+	};
 	var $that = $(this);
 	if(e.which == 1) {
-		var left = parseInt($that.css('left')) || 0;
-		var top = parseInt($that.css('top')) || 0;
+		var left = parseInt($that.css('left'), 10) || 0;
+		var top = parseInt($that.css('top'), 10) || 0;
 		$(window).on('mousemove', function(e){
 
-			var x = left + e.clientX - o.x
-			var y = top + e.clientY - o.y
+			var x = left + e.clientX - o.x;
+			var y = top + e.clientY - o.y;
 			$that.css({
 				'left' : x,
 				'top' : y
-			})
+			});
 
-		})
+		});
 	} else {
-		var w = parseInt($that.css('width'));
-		var h = parseInt($that.css('height'));
+		var w = parseInt($that.css('width'), 10);
+		var h = parseInt($that.css('height'), 10);
 		$(window).on('mousemove', function(e){
 			var n = {
 				x : e.clientX,
 				y : e.clientY
-			}
-			var d = parseInt(Math.sqrt( (o.x - n.x)*(o.x - n.x) + (o.y - n.y)*(o.y - n.y) ));
+			};
+			var d = parseInt(Math.sqrt( (o.x - n.x)*(o.x - n.x) + (o.y - n.y)*(o.y - n.y) ), 10);
 			if(n.x > o.x || n.y > o.y) d = -d;
 			$that.css({
 				'width' : w-d
-			})
-		})
+			});
+		});
 	}
 	$(window).on('mouseup', function(){
 		$(window).off('mousemove');
-	})
-}
+	});
+};
 
-$('section>img').on('mousedown', moveImgs)
-
-$('section').on('click', hideFooter)
-$('section>*').live('click', editSection)
-
-$('section>*').on('keydown', function(){
-	var content = $(this).text();
-	$('.content').text(content);
-})
-
-$('section').on('dblclick', function(){
-	if(!$('section', $(this)).length) { // if it's a section with no children
-		var $that = $('<p></p>');
-		$(this).append($that);
-		$that.trigger('click');
+$('section').on('click', function(){
+	if($(this).parent().hasClass('slides')) { // if it's a section with no children
+		var $span = $('<span></span>')
+				.on('click', editSection);
+		$span.appendTo($(this)).trigger('click'); // append to section and trigger edit
 		$('.content').focus();
 	}
-})
+});
+
+$('section>*').on('click', editSection);
 
 
 $('.resize').on('mousedown', function(e){
 
 	var resizeFooter = function(e) {
 		var nh = $(document).height() - e.clientY;
-		$('#footer').css({ 'height' : nh })
-	}
+		$('#footer').css({ 'height' : nh });
+	};
 
 	$(window).on('mousemove', function(e){
 		resizeFooter(e);
 	});
 
-})
+	$(window).on('mouseup', function(){
+		$(window).off('mousemove');
+	});
+});
 
-$(window).on('mouseup', function(){
-	$(window).off('mousemove');
-})
 
 document.getElementsByTagName('section')[0].ondrop = function(e) {
 	
@@ -161,3 +210,5 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 
 	reader.readAsDataURL(file);
 }
+
+document.getElementsByClassName('close')[0].addEventListener('click', hideFooter, false);

@@ -4,20 +4,23 @@
 </head>
 <body>
 
-	<div class="input">
-		<h1><h1>this is a test</h1></h1>
-	</div>
-
-	<div class="output">
-
-	</div>
+	<div class="output"></div>
 
 </body>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script>
+
+	var code = location.search.substring(6, location.search.substring.length-1) || 0; 
 	
-	var input = $('.input').html();
-	$('.output').text(input)
+	if(!code) {
+		var clientId = 'e54063653866d8982e47';
+
+		var popup = open('https://github.com/login/oauth/authorize' + 
+					'?client_id=' + clientId +
+					'&scope=gist,user', 'popup', 'width=1015,height=500');		
+	} else {
+		console.log(code);
+	}
 
 </script>
 </html>
