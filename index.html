@@ -5,7 +5,8 @@
 	<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'> -->
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet/less" type="text/css" href="css/style.less">
+	<script src="js/less-1.3.0.min.js"></script>
 </head>
 <body>
 
@@ -21,20 +22,12 @@
 		</div>
 </header>
 
-<div class="add-slide add-left" data-direction="left">+</div>
+<div class="add-slide add-right" data-direction="right">+</div>
 <div class="add-slide add-down" data-direction="bottom">+</div>
 <div id="reveal">
 	<div class="slides"> 
 		<section>
-			<span>hello world</span>
-		</section>
-		<section>
-			<section>
-				<span>hello world</span>
-			</section>
-			<section>
-				<span>hello world</span>
-			</section>
+			<span>1</span>
 		</section>
 	</div>
 
@@ -48,11 +41,14 @@
 	<div class="resize"></div>
 	<div class="text-controls">
 		<div class="row">
-			<div class="span6">
+			<div class="span12">
 				<div class="btn-group">
 					<button class="btn" data-textstyle=b><b>B</b></button>
 					<button class="btn" data-textstyle=i><i>I</i></button>
 					<button class="btn" data-textstyle=u><u>U</u></button>
+					<button class="btn" data-textstyle=h1>H1</button>
+					<button class="btn" data-textstyle=h2>H2</button>
+					<button class="btn" data-textstyle=h3>H3</button>
 				</div>
 				<button class='btn' data-textstyle=a>link</button>
 			</div>

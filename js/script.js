@@ -1,40 +1,67 @@
 //"use strict"
 
-var _currentSlide = { x: 0, y: 0 },
-	$editable,
-	Kreator = new Kreate();
+var Kreator = (function(options) {
 
-Reveal.addEventListener( 'slidechanged', function( event ) {
-	hideFooter();
-	Kreator.setSlideX(event.indexh);
-	Kreator.setSlideY(event.indexv);
-});
+	var slideX = 0,
+		slideY = 0,
+		$ = options.$,
+		dummyText = $('<span>new slide</span>'),
+		Reveal = options.Reveal,
+		count = 1;
 
-function Kreate () {
+	var addContentToSlide = function() {
+		$(this).html('');
+		console.log('adding content');
+		console.log($(this));
+		if($(this).parent().hasClass('slides')) { // if it's a section with no children
+			var $span = $('<span/>')
+					.on('click', Kreator.editSection);
+			$span.appendTo($(this)).trigger('click'); // append to section and trigger edit
+			$('.content').focus();
+		}
+	};
+	
+	Reveal.addEventListener( 'slidechanged', function( event ) {
+		hideFooter();
+		Kreator.setSlideX(event.indexh);
+		Kreator.setSlideY(event.indexv);
+	});
 
-	var slideX = 0;
-	var slideY = 0;
+	options.down.on('click', function(){
+		Kreator.addSlideDown('dummy');
+		Reveal.navigateDown();
+	});
+
+	options.right.on('click', function(){
+		Kreator.addSlideRight('dummy');
+		Reveal.navigateRight();
+	});
 
 	var setSlideX = function(x) {
-		this.slideX = x;
+		slideX = x;
 	};
 
 	var setSlideY = function(y) {
-		this.slideY = y;
+		slideY = y;
 	};
 
 	var getCurrentSlide = function() {
-		var s = $('.slides>section').eq(slideX);
-		if(s.length > 1) {
-			return s[this.slideY];
-		} else {
-			return s;
+		var s = $('.present');
+		if(!s.hasClass('stack')) {
+			if(s.length > 1) {
+				return s.eq(slideX);
+			} else {
+				return s;
+			}
+		}
+		else {
+			return $('section', s).eq(slideY);
 		}
 	};
 
 	var getDownSlide = function() {
-		var s = $('.slides>section').eq(slideX);
-		var c = $('section', s);
+		var s = $('.slides>section').eq(slideX),
+			c = $('section', s);
 		if(!c.length) return 0;
 		else {
 			return c[this.slideY+1];
@@ -42,72 +69,90 @@ function Kreate () {
 	};
 
 	var addSlideRight = function(content) {
-		var s = getCurrentSlide();
-		$('<section>' + content + '</section>').insertAfter(s);
-	};
+		var c = dummyText.clone().html('<h2>' + (++count) + '</h2>').on('click', editSection),
+			s = this.getCurrentSlide();
 
-	var addSlideLeft = function(content) {
-		var s = getCurrentSlide();
-		$('<section>' + content + '</section>').insertBefore(s);
-	};
-
-	var addSlideDown = function(content) {
-		var s = getCurrentSlide();
-		var p = s.parent();
-		if(p.hasClass('slides')) {
-			var slides = $('<section></section>')
-						.append(s.clone())
-						.append('<section>'+content+'</section>');
-			s.replaceWith(slides);
+		// if the current slide is the last slide on the X axis we append to the parent
+		if($('.slides>section').length == slideX+1) {
+			var section = $('<section/>').append(c);
+			$('.slides').append(section);
 		} else {
-			alert('with children');
+			// else we just append after the current element
+			$('<section/>')
+				.append(c)
+				.insertAfter(s);
 		}
 	};
 
-	return {
-		setSlideY: setSlideY,
-		setSlideX: setSlideX,
-		addSlideRight: addSlideRight,
-		addSlideLeft: addSlideLeft,
-		addSlideDown: addSlideDown
+	var addSlideLeft = function(content) {
+		dummyText.on('click', editSection);
+		var s = this.getCurrentSlide();
+		$('<section/>')
+			.append(dummyText.clone())
+			.insertBefore(s);
 	};
 
-}
+	var addSlideDown = function(content) {
 
-$('.add-down').on('click', function(){
-	Kreator.addSlideDown('dummy');
-	Reveal.navigateDown();
-});
+		var s = this.getCurrentSlide();
+		dummyText.on('click', editSection);
 
-$('.add-left').on('click', function(){
-	Kreator.addSlideRight('dummy');
-	Reveal.navigateRight();
-});
+		if(s.parent().hasClass('slides')) {
+			var c = $('<section/>').append(s.html());
+			var ns = $('<section/>').append(dummyText.clone());
+
+			s.html('').append(c).append(ns);
+		} else {
+			$('<section/>').text('new slide').insertAfter(s);
+		}
+
+	};
+
+	var editSection = function(e){
+		e.stopPropagation();
+		console.log('edit section', $(this));
+		//if($('section', $(this).parent()).length) return; // weird bug this needs fixing !
+		if(!$(this).parent().hasClass('present')) return;
+		$editable = $(this);
+
+		var tagN = this.nodeName.toLowerCase(),
+			content = $editable.html();
+
+		if(['div', 'img'].indexOf(tagN) >= 0) return;
+
+		if(content[0] !== '<' && tagN !== 'span')
+			$('#footer').css({ 'bottom' : 0 })
+				.children('.content')
+				.html('<' + tagN + '>' + content + '</' + tagN + '>');
+			else
+				$('#footer').css({ 'bottom' : 0 })
+					.children('.content')
+					.html(content);
+	};
+
+	return {
+		addSlideDown: addSlideDown,
+		addSlideRight: addSlideRight,
+		addSlideLeft: addSlideLeft,
+		editSection: editSection,
+		setSlideX: setSlideX,
+		setSlideY: setSlideY,
+		getCurrentSlide: getCurrentSlide
+	};
+}({
+	Reveal: Reveal,
+	down: $('.add-down'),
+	right: $('.add-right'),
+	$: $
+}));
+
+var $editable;
 
 var hideFooter = function(e){
 	$('#footer').css({
 		'height' : 210,
 		'bottom' : -220
 	}).removeClass();
-};
-
-var editSection = function(e){
-	e.stopPropagation();
-	$editable = $(this);
-
-	var tagN = this.nodeName.toLowerCase(),
-		content = $editable.html();
-
-	if(tagN === 'section' || tagN === 'div' || tagN === 'img') return;
-
-	if(content[0] !== '<' && tagN !== 'span')
-		$('#footer').css({ 'bottom' : 0 })
-			.children('.content').text('<' + tagN + '>' + content + '</' + tagN + '>');
-		else
-			$('#footer').css({ 'bottom' : 0 })
-				.children('.content').text(content);
-
-
 };
 
 $('#footer .content').on('keyup', function(e){
@@ -166,15 +211,13 @@ var moveImgs = function(e){
 };
 
 $('section').on('click', function(){
-	if($(this).parent().hasClass('slides')) { // if it's a section with no children
-		var $span = $('<span></span>')
-				.on('click', editSection);
-		$span.appendTo($(this)).trigger('click'); // append to section and trigger edit
-		$('.content').focus();
-	}
-});
+	var s = Kreator.getCurrentSlide();
+	var span = $('<span/>').on('click', Kreator.editSection);
+	s.append(span);
+	span.trigger('click');
+})
 
-$('section>*').on('click', editSection);
+$('section>*').on('click', Kreator.editSection);
 
 
 $('.resize').on('mousedown', function(e){
@@ -203,9 +246,11 @@ document.getElementsByTagName('section')[0].ondrop = function(e) {
 	, reader = new FileReader();
 	
 	reader.onload = function (e) {
-		var img = $('<img src="'+e.target.result+'"></img>').on('mousedown', moveImgs)
+		var img = $('<img/>')
+			.attr('src', e.target.result)
+			.on('mousedown', moveImgs)
 			.appendTo($this)
-			.bind('dragstart', function(e) { e.preventDefault(); });	
+			.bind('dragstart', function(e) { e.preventDefault(); });
 	};
 
 	reader.readAsDataURL(file);

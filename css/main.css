@@ -15,7 +15,7 @@ html, body {
 	margin: 0;
 	overflow: hidden;
 	
-	font-family: 'Open Sans', sans-serif;
+	font-family:Helvetica, sans-serif;
 	font-size: 36px;
 	font-weight: 200;
 	letter-spacing: -0.02em;
@@ -108,6 +108,7 @@ html {
  *********************************************/
 
 #reveal .slides section {
+	font-family: 'Open Sans', sans-serif;
 	line-height: 1.2em;
 	font-weight: normal;
 }
