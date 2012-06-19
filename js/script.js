@@ -72,6 +72,8 @@ define(['text', 'jquery'], function(textStyle, $){
 				}
 			});
 
+			$('button.close').on('click', this.hideFooter);
+
 		};
 
 		var addContentToSlide = function() {
@@ -119,11 +121,18 @@ define(['text', 'jquery'], function(textStyle, $){
 
 			// if the current slide is the last slide on the X axis we append to the parent
 			if($('.slides>section').length == slideX+1) {
-				var section = $('<section/>').append(c);
+				var section = $('<section/>')
+							.on('click', function(){
+								var span = $('<span/>').on('click', this.editSection);
+								s.append(span);
+								span.trigger('click');
+							})
+							.append(c);
 				$('.slides').append(section);
 			} else {
 				// else we just append after the current element
 				$('<section/>')
+					.on('click', function(){console.log('add span 2')})
 					.append(c)
 					.insertAfter(s);
 			}
