@@ -3,6 +3,8 @@
 GUI Editor for reveal.js
 https://github.com/hakimel/reveal.js/issues/31
 
+If you are too lazy to clone and check it out yourself there is a youtube video http://www.youtube.com/watch?v=Cdeq1PJh14s a little old but it gives a general idea
+
 There is an about page https://github.com/piatra/kreator.js/wiki/About
 
 ## Features
