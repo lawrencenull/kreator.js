@@ -1,89 +1,126 @@
 define(['text', 'jquery'], function(textStyle, $){
-	
+
 	var Kreator = (function (options) {
 
-		var slideX = 0,
-			slideY = 0,
+		var slideX = 0, // to keep track of the current slide we're on
+			slideY = 0, // to keep track of the current slide we're on
 			$ = options.jquery,
 			Reveal = options.reveal,
-			dummyText = $('<span>new slide</span>'),
-			$span;
+			dummyText = $('<span contentEditable>new span</span>'), // this is the generic span in which gets added to the section you edit this to insert content
+			$span,
+			hljs = options.hljs;
 
 		var init = function() {
 
-			options.right = $('<div data-direction="right"></div>')
+			options.right = $('<div data-direction="right">+</div>')
 					.addClass('add-slide add-right')
-					.text('+');
+					.on('click', function(){
+						Kreator.addSlideRight();
+						Reveal.navigateRight();
+					});
 			
-			options.down = $('<div data-direction="bottom"></div>')
+			options.down = $('<div data-direction="bottom">+</div>')
 					.addClass('add-slide add-down')
-					.text('+');
+					.on('click', function(){
+						Kreator.addSlideDown();
+						Reveal.navigateDown();
+					});
 
 			$('body').append(options.right)
 				.append(options.down);
 
-			options.down.on('click', function(){
-				Kreator.addSlideDown('dummy');
-				Reveal.navigateDown();
-			});
-
-			options.right.on('click', function(){
-				Kreator.addSlideRight('dummy');
-				Reveal.navigateRight();
-			});
-
 			Reveal.addEventListener( 'slidechanged', function( event ) {
-				Kreator.hideFooter();
 				Kreator.setSlideX(event.indexh);
 				Kreator.setSlideY(event.indexv);
 			});
 
 			$('section').on('click', function(){
-				var s = Kreator.getCurrentSlide();
-				var span = $('<span/>').on('click', Kreator.editSection);
-				s.append(span);
-				span.trigger('click');
+				dummyText.clone()
+					.on('click', Kreator.editSpan)
+					.appendTo(Kreator.getCurrentSlide())
+					.focus();
 			});
 
-			$('section>*').on('click', Kreator.editSection);
-
-			$('#footer .content').on('keyup', function(e){
-				var string = $('.present').text();
-				
-				if(e.keyCode == 13) {
-					this.innerHTML = this.innerHTML.replace(/<div>/gi, '')
-									.replace(/<\/div>/gi, '')
-									.replace(/&nbsp;/gi, ' <br>');
-				}
-
-				$('#word-count').text(string.split(' ').length);
-				$('#char-count').text(string.length);
-				$span.html(this.innerHTML);
-			});
-
-			$('.btn').on('click', function(){
+			$('.btn-group a').on('click', function(){
 				var tag = $(this).data('textstyle');
-				if(tag === 'a')
-					textStyle.insertHiperlink(this, $span);	
+				var string = '';
+				if(['b', 'i'].indexOf(tag)>=0) {
+					string = textStyle.format(tag, $span);
+					$span.html(string);
+					$('a.enabled')
+						.removeClass('enabled').addClass('disabled')
+						.attr('data-title', 'select words');
+				} else if(['li', 'blockquote'].indexOf(tag)>=0) {
+					string = textStyle.paragraph(tag, $span);
+					$span.html(string);
+				} else if(['left', 'center', 'right'].indexOf(tag)>=0) {
+					string = textStyle.align(tag, $span);
+					$span.html(string);
+				} else if(tag === 'a') {
+					textStyle.insertHiperlink(this, $span);
+				}
+
+			});
+
+			$(window).on('mouseup', function(){
+				var selection = (window.getSelection()).toString();
+				if(!selection.length) return;
 				else {
-					var string = textStyle.format(this);
-					$('.content').html(string);
-					updateSectionContent();
+					$('a.disabled')
+						.removeClass('disabled').addClass('enabled')
+						.attr('data-title', 'make bold');
 				}
 			});
 
-			$('button.close').on('click', this.hideFooter);
+			$('#select-dimensions').on('change', function(){
+				var tag = $(this).val(),
+					string = textStyle.paragraph(tag, $span);
+				if(string) $span.html(string);
+			});
 
+			$(window).on('paste', function(e){
+				setTimeout(function(){formatText($span);}, 100);
+			});
+
+			$('#remove').on('click', function(){
+				$span.remove();
+			});
+
+			$('#move-up').on('click', function(){
+				if($span) {
+					var prev = $span.prev('span');
+					if(prev.length) {
+						$span.insertBefore(prev);
+					}
+				}
+			});
+
+			$('#move-down').on('click', function(){
+				if($span) {
+					var next = $span.next('span');
+					if(next.length) {
+						$span.insertAfter(next);
+					}
+				}
+			});
+
+		};
+
+		var formatText = function($s) {
+			// a quick example of paste-code-and-automatically-format-it
+			$s.html($s.html().replace(/(<([^>]+)>)/ig,""));
+			var result = hljs.highlightAuto($s.html());
+			if(result.keyword_count > 2) {
+				$s.replaceWith('<pre contentEditable><code>'+result.value+'</code></pre>');
+			}
 		};
 
 		var addContentToSlide = function() {
-			var s = this.getCurrentSlide();
-			var span = $('<span/>').on('click', this.editSection);
-			s.append(span);
-			span.trigger('click');
+			dummyText.clone()
+				.on('click', editSpan)
+				.appendTo(Kreator.getCurrentSlide());
 		};
 		
-
 		var setSlideX = function(x) {
 			slideX = x;
 		};
@@ -115,41 +152,28 @@ define(['text', 'jquery'], function(textStyle, $){
 			}
 		};
 
-		var addSlideRight = function(content) {
-			var c = dummyText.clone().on('click', this.editSection),
+		var addSlideRight = function() {
+			var c = dummyText.clone().on('click', editSpan),
 				s = this.getCurrentSlide();
 
 			// if the current slide is the last slide on the X axis we append to the parent
 			if($('.slides>section').length == slideX+1) {
 				var section = $('<section/>')
-							.on('click', function(){
-								var span = $('<span/>').on('click', this.editSection);
-								s.append(span);
-								span.trigger('click');
-							})
+							.on('click', addContentToSlide)
 							.append(c);
 				$('.slides').append(section);
 			} else {
 				// else we just append after the current element
 				$('<section/>')
-					.on('click', function(){console.log('add span 2')})
-					.append(c)
-					.insertAfter(s);
+					.on('click', addContentToSlide)
+					.append(c).insertAfter(s);
 			}
 		};
 
-		var addSlideLeft = function(content) {
-			dummyText.on('click', this.editSection);
-			var s = this.getCurrentSlide();
-			$('<section/>')
-				.append(dummyText.clone())
-				.insertBefore(s);
-		};
-
-		var addSlideDown = function(content) {
+		var addSlideDown = function() {
 
 			var s = this.getCurrentSlide();
-			var d = dummyText.clone().on('click', this.editSection);
+			var d = dummyText.clone().on('click', editSpan);
 
 			if(s.parent().hasClass('slides')) {
 				var c = $('<section/>').append(s.html());
@@ -159,131 +183,29 @@ define(['text', 'jquery'], function(textStyle, $){
 			} else {
 				$('<section/>').append(d).insertAfter(s);
 			}
-
+			d.trigger('click');
 		};
 
-		var editSection = function(e){
+		var editSpan = function(e) {
+			console.log('editing');
 			e.stopPropagation();
-			var tagN = this.nodeName.toLowerCase()
-				, content = '';
-
 			$span = $(this);
-
-			if(tagN !== 'span') content = '<' + tagN + '>' + $(this).html() + '</' + tagN + '>';
-			else content = $(this).html();
-			$('#footer').css({'bottom':0})
-				.children('.content')
-				.html(content);
-		};
-
-		var updateSectionContent = function() {
-			$span.html($('.content').html());
-		};
-
-		var hideFooter = function(e){
-			$('#footer').css({
-				'height' : 210,
-				'bottom' : -220
-			}).removeClass();
 		};
 
 		return {
 			addSlideDown: addSlideDown,
 			addSlideRight: addSlideRight,
-			addSlideLeft: addSlideLeft,
-			editSection: editSection,
+			editSpan: editSpan,
 			setSlideX: setSlideX,
 			setSlideY: setSlideY,
 			getCurrentSlide: getCurrentSlide,
-			hideFooter: hideFooter,
 			init: init
 		};
 	})({
 		jquery: $,
-		reveal: Reveal
+		reveal: Reveal,
+		hljs: hljs
 	});
 
 	return Kreator;
 });
-
-// var moveImgs = function(e){
-// 	if(e.which > 2) return;
-// 	var o = {
-// 		x : e.clientX,
-// 		y : e.clientY,
-// 		which : e.which
-// 	};
-// 	var $that = $(this);
-// 	if(e.which == 1) {
-// 		var left = parseInt($that.css('left'), 10) || 0;
-// 		var top = parseInt($that.css('top'), 10) || 0;
-// 		$(window).on('mousemove', function(e){
-
-// 			var x = left + e.clientX - o.x;
-// 			var y = top + e.clientY - o.y;
-// 			$that.css({
-// 				'left' : x,
-// 				'top' : y
-// 			});
-
-// 		});
-// 	} else {
-// 		var w = parseInt($that.css('width'), 10);
-// 		var h = parseInt($that.css('height'), 10);
-// 		$(window).on('mousemove', function(e){
-// 			var n = {
-// 				x : e.clientX,
-// 				y : e.clientY
-// 			};
-// 			var d = parseInt(Math.sqrt( (o.x - n.x)*(o.x - n.x) + (o.y - n.y)*(o.y - n.y) ), 10);
-// 			if(n.x > o.x || n.y > o.y) d = -d;
-// 			$that.css({
-// 				'width' : w-d
-// 			});
-// 		});
-// 	}
-// 	$(window).on('mouseup', function(){
-// 		$(window).off('mousemove');
-// 	});
-// };
-
-// $('section>*').on('click', Kreator.editSection);
-
-
-// $('.resize').on('mousedown', function(e){
-
-// 	var resizeFooter = function(e) {
-// 		var nh = $(document).height() - e.clientY;
-// 		$('#footer').css({ 'height' : nh });
-// 	};
-
-// 	$(window).on('mousemove', function(e){
-// 		resizeFooter(e);
-// 	});
-
-// 	$(window).on('mouseup', function(){
-// 		$(window).off('mousemove');
-// 	});
-// });
-
-
-// document.getElementsByTagName('section')[0].ondrop = function(e) {
-	
-// 	e.preventDefault();
-	
-// 	var $this = $(this)
-// 	, file = e.dataTransfer.files[0]
-// 	, reader = new FileReader();
-	
-// 	reader.onload = function (e) {
-// 		var img = $('<img/>')
-// 			.attr('src', e.target.result)
-// 			.on('mousedown', moveImgs)
-// 			.appendTo($this)
-// 			.bind('dragstart', function(e) { e.preventDefault(); });
-// 	};
-
-// 	reader.readAsDataURL(file);
-// }
-
-// document.getElementsByClassName('close')[0].addEventListener('click', hideFooter, false);
